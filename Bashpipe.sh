@@ -16,11 +16,11 @@ dirs="data \
 	data/tune \
 	log \
 	runs"
-for d in $(data_dependencies) ; do \
+for d in $dirs ; do \
 	if [ ! -d "$d" ]; then
 		mkdir -p $d
 	fi
-done"
+done
 
 exit
 
@@ -41,7 +41,7 @@ qopts="-cwd -l num_proc=1,h_vmem=8g,mem_free=8g,h_rt=24:00:00"
 script=scripts/step01-build-outdomain-lm.sh
 script_cmd="$script \
 	$SRILM_DIR \
-	data/train/$(basename $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED) \
+	data/train/$(basename $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED)"
 cmd="qrsh $qopts $script_cmd"
 cachecmd build-outdomain-lm "$cmd" \
 	data/selection/indomain_sourcelang.vocab \
@@ -71,7 +71,7 @@ script=scripts/step11-subtract-ppls.sh
 script_cmd="$script \
 	data/train/$(basename $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED) \
 	data/train/$(basename $OUTDOMAIN_TEXT_TARGETLANG_PROCESSED)"
-cmd="qrsh $qopts $script_cmd" \
+cmd="qrsh $qopts $script_cmd"
 cachecmd subtract-ppls "$cmd" \
 	data/selection/ppl_indomain.txt \
 	data/selection/ppl_outdomain.txt
@@ -86,7 +86,7 @@ for pct in $PERCENTAGES ; do
 	qopts="-cwd -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
 	script=scripts/step20-extract-sorted-segments.sh
 	script_cmd="$script $pct"
-	cmd="qrsh $qopts $script_cmd" \
+	cmd="qrsh $qopts $script_cmd"
 	cachecmd extract-sorted-segs-$pct-pct "$cmd" \
 		data/selection/ppl_diff_source_target_sorted_nodups.txt
 		$script \
@@ -100,10 +100,10 @@ for pct in $PERCENTAGES ; do
 	qopts="-cwd -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
 	script=scripts/step21-extract-unsorted-segments.sh
 	script_cmd="$script \
-		$pct" \
+		$pct \
 		data/train/$(basename $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED) \
 		data/train/$(basename $OUTDOMAIN_TEXT_TARGETLANG_PROCESSED)"
-	cmd="qrsh $qopts $script_cmd" \
+	cmd="qrsh $qopts $script_cmd"
 	cachecmd extract-unsorted-segs-$pct-pct "$cmd" \
 		data/train/$(basename $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED) \
 		data/train/$(basename $OUTDOMAIN_TEXT_TARGETLANG_PROCESSED) \
@@ -115,7 +115,7 @@ done
 # Extract a model that has no added text from the out-of-domain corpus.
 # Train, tune, and test it.
 
-data_dependencies=`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_1).*` \
+data_dependencies="`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_1).*` \
 	`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_2).*` \
 	`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_3).*` \
 	`ls data/tune/$(basename $DEV_CORPUS).*` \
@@ -139,7 +139,7 @@ cachecmd full-pipeline-0-added "$cmd" \
 # Extract a grammar; train with random data, tune, and test it.
 for sorting in sorted unsorted ; do
 	for pct in $PERCENTAGES ; do
-		data_dependencies=`ls data/train/outdomain_${sorting}_$pct.train.*` \
+		data_dependencies="`ls data/train/outdomain_${sorting}_$pct.train.*` \
 			`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_1).*` \
 			`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_2).*` \
 			`ls data/train/$(basename $EXTRA_TRAINING_CORPUS_3).*` \
@@ -162,5 +162,6 @@ for sorting in sorted unsorted ; do
 			$script \
 			runs/${sorting}_$pct/grammar.gz \
 			runs/${sorting}_$pct/test/1/final-bleu
+
 	done
 done
