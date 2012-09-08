@@ -4,25 +4,12 @@ export CACHEPIPE=$JOSHUA/scripts/training/cachepipe
 export PERL5LIB+=:$CACHEPIPE
 . $CACHEPIPE/bashrc
 
-# Read in all the configurations
+# Read in all the configurations and set up
+# directory structure
 . config.sh
+. setup.sh
 
 # Create directory structure for derived files
-
-dirs="data \
-	data/selection \
-	data/test \
-	data/train \
-	data/tune \
-	log \
-	runs"
-for d in $dirs ; do \
-	if [ ! -d "$d" ]; then
-		mkdir -p $d
-	fi
-done
-
-exit
 
 # Extract the source-side vocabulary from the in-domain corpus
 script=scripts/step00-extract-vocab.sh
