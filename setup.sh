@@ -5,9 +5,6 @@
 
 dirs="data \
 	data/selection \
-	data/test \
-	data/train \
-	data/tune \
 	log \
 	runs"
 for d in $dirs ; do \
@@ -15,24 +12,3 @@ for d in $dirs ; do \
 		mkdir -p $d
 	fi
 done
-
-# Set up symlinks.
-for f in \
-	$INDOMAIN_TEXT_SOURCELANG_PROCESSED \
-	$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
-	$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED \
-	$EXTRA_TRAINING_CORPUS_1 \
-	$EXTRA_TRAINING_CORPUS_2 \
-	$EXTRA_TRAINING_CORPUS_3 ; do
-
-	rm -f data/train/$(basename $f)*
-	ln -sf $f data/train/
-done
-
-rm -f data/tune/$(basename $DEV_CORPUS)
-ln -sf $DEV_CORPUS data/tune/
-
-rm -f data/test/$(basename $TEST_CORPUS)
-ln -sf $TEST_CORPUS data/test/
-
-ln -sf $INDOMAIN_LM data/selection/indomain_lm.gz

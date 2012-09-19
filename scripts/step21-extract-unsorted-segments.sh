@@ -11,6 +11,9 @@
 #$ -m eas
 
 set -u
+set -x
+set -e
+set -o pipefail
 
 # Command-line arguments
 $percent_segs=$1

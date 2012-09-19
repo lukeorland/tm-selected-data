@@ -9,6 +9,10 @@
 
 # Extract the source-side vocabulary from the in-domain corpus
 set -u
+set -x
+set -e
+set -o pipefail
+
 # Command-line arguments
 srilm_dir=$1
 indomain_text_sourcelang_processed=$2

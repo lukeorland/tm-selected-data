@@ -10,6 +10,9 @@
 #$ -m eas
 
 set -u
+set -x
+set -e
+set -o pipefail
 
 # Command-line arguments
 extra_training_corpus_1=$1

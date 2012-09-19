@@ -12,6 +12,11 @@
 #$ -M lorland1@jhu.edu
 #$ -m eas
 
+set -u
+set -x
+set -e
+set -o pipefail
+
 outdomain_text_sourcelang_processed=$1
 outdomain_text_targetlang_processed=$2
 
