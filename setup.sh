@@ -26,13 +26,13 @@ for f in \
 	$EXTRA_TRAINING_CORPUS_3 ; do
 
 	rm -f data/train/$(basename $f)*
-	ln -s $f data/train/
+	ln -sf $f data/train/
 done
 
 rm -f data/tune/$(basename $DEV_CORPUS)
-ln -s $DEV_CORPUS data/tune/
+ln -sf $DEV_CORPUS data/tune/
 
 rm -f data/test/$(basename $TEST_CORPUS)
-ln -s $TEST_CORPUS data/test/
+ln -sf $TEST_CORPUS data/test/
 
-ln -s $INDOMAIN_LM data/selection/indomain_lm.gz
+ln -sf $INDOMAIN_LM data/selection/indomain_lm.gz
