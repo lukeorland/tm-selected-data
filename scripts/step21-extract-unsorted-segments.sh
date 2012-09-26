@@ -16,18 +16,21 @@ set -e
 set -o pipefail
 
 # Command-line arguments
-$percent_segs=$1
+percent_segs=$1
 outdomain_text_sourcelang_processed=$2
 outdomain_text_targetlang_processed=$3
 
 # Turn off globbing.
 set -f
 
-output_dir=data/train
+output_dir=data/selection
 
 # Calculate the number of segments to retain based on the percent requested.
-expression="$cat data/selection/ppl_diff_source_target_sorted_nodups.txt | wc -l) * $percent_segs / 100"
+expression="$(cat data/selection/ppl_diff_source_target_sorted_nodups.txt | wc -l) * $percent_segs / 100"
 num_segs="$(echo $expression | bc)"
+
+# Turn on globbing.
+set +f
 
 # SOURCE
 head -n $num_segs $outdomain_text_sourcelang_processed \

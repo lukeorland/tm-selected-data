@@ -12,29 +12,30 @@
 
 set -u
 set -x
-set -e
-set -o pipefail
 
 # Command-line arguments
 percent_segs=$1
+source_dest=$2
+target_dest=$3
 
-# Turn off globbing.
+# turn off globbing.
 set -f
 
-output_dir=data/train
+output_dir=data/selection
 
 # Calculate the number of segments to retain based on the percent requested.
 expression="$(cat data/selection/ppl_diff_source_target_sorted_nodups.txt | wc -l) * $percent_segs / 100"
 num_segs="$(echo $expression | bc)"
 
-# SOURCE
-cat data/selection/ppl_diff_source_target_sorted_nodups.txt \
-	| head -n $num_segs \
-	| awk -F '\t' '{print $2}' \
-	> $output_dir/outdomain_sorted_$percent_segs.train.es
+# turn on globbing.
+set +f
 
-# TARGET
 cat data/selection/ppl_diff_source_target_sorted_nodups.txt \
 	| head -n $num_segs \
-	| awk -F '\t' '{print $3}' \
-	> $output_dir/outdomain_sorted_$percent_segs.train.es
+	| head -n $num_segs \
+	| tee \
+	>(awk -F '\t' '{print $2}' \
+		> $source_dest) \
+	>(awk -F '\t' '{print $3}' \
+		> $target_dest) \
+	> /dev/null

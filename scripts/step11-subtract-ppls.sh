@@ -31,7 +31,7 @@ outdomain_text_targetlang_processed=$2
 paste data/selection/ppl_indomain.txt data/selection/ppl_outdomain.txt \
 	| awk -F '\t' '{print $1 -$2}' \
 	| paste - $outdomain_text_sourcelang_processed \
-		paste - $outdomain_text_targetlang_processed \
+	| paste - $outdomain_text_targetlang_processed \
 	| sort -n \
 	| uniq \
 	> data/selection/ppl_diff_source_target_sorted_nodups.txt
