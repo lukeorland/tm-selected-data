@@ -24,6 +24,5 @@ $srilm_dir/ngram-count \
 	-order 5 \
 	-kndiscount \
 	-text $text \
-	-vocab data/selection/indomain_sourcelang.vocab \
-	-lm data/selection/outdomain_source_lm.gz
+	-lm data/selection/indomain_source_lm.gz
 

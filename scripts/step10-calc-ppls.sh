@@ -25,12 +25,13 @@ set -o pipefail
 # Command-line arguments
 srilm_dir=$1
 outdomain_text_sourcelang_processed=$2
-indomain_lm=$3
+outdomain_lm=$3
+indomain_lm=$4
 
 # Calculate the perplexity of the source-side non-in-domain text against the
 # non-in-domain LM.
 $srilm_dir/ngram -debug 1 -unk \
-	-lm data/selection/outdomain_lm.gz \
+	-lm $outdomain_lm \
 	-ppl $outdomain_text_sourcelang_processed \
 	| grep "zeroprobs.* logprob.* ppl.* ppl1" \
 	| awk '{print $6}' \

@@ -4,6 +4,7 @@
 # fixed data with no added non-in-domain data.
 
 #$ -cwd
+#$ -V
 #$ -o log
 #$ -e log
 #$ -S /bin/bash

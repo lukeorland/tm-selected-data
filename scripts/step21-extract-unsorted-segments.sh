@@ -15,6 +15,8 @@ set -x
 set -e
 set -o pipefail
 
+. config.sh
+
 # Command-line arguments
 percent_segs=$1
 outdomain_text_sourcelang_processed=$2
@@ -34,8 +36,8 @@ set +f
 
 # SOURCE
 head -n $num_segs $outdomain_text_sourcelang_processed \
-	> $output_dir/outdomain_unsorted_$percent_segs.train.es
+	> $output_dir/outdomain_unsorted_$percent_segs.train.$source_lang
 
 # TARGET
 head -n $num_segs $outdomain_text_targetlang_processed \
-	> $output_dir/outdomain_unsorted_$percent_segs.train.en
+	> $output_dir/outdomain_unsorted_$percent_segs.train.$target_lang

@@ -3,8 +3,8 @@
 # Run the full pipeline, building and training the translation model against
 # selected (sorted) or random (unsorted) data.
 
-#$ -V
 #$ -cwd
+#$ -V
 #$ -o log
 #$ -e log
 #$ -S /bin/bash
@@ -12,26 +12,25 @@
 #$ -M lorland1@jhu.edu
 #$ -m eas
 
+. config.sh
+
 #set -u
 set -x
 #set -e
 #set -o pipefail
 
 # Command-line arguments
-extra_training_corpus_1=$1
-extra_training_corpus_2=$2
-extra_training_corpus_3=$3
-dev_corpus=$4
-test_corpus=$5
-joshua=$6
-sorting=$7
-percent_segs=$8
+dev_corpus=$1
+test_corpus=$2
+joshua=$3
+sorting=$4
+percent_segs=$5
 
 $joshua/scripts/training/pipeline.pl \
 	--readme "phrase-based, separate glue, twitter tokenizer" \
 	--rundir runs/${sorting}_$percent_segs \
-	--source es \
-	--target en \
+	--source $source_lang \
+	--target $target_lang \
 	--no-prepare \
 	--type phrasal \
 	--aligner giza \
