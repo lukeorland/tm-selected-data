@@ -42,6 +42,7 @@ $joshua/scripts/training/pipeline.pl \
 	--buildlm-mem 10g \
 	--no-mbr \
 	--optimizer-runs 1 \
+	--hadoop-mem 500m
 	#--corpus EXTRA_TRAINING_CORPUS_1 \
 	#--corpus EXTRA_TRAINING_CORPUS_2 \
 	#--corpus EXTRA_TRAINING_CORPUS_3 \
