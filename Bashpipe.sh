@@ -163,7 +163,7 @@ for sorting in sorted unsorted ; do
 			$JOSHUA \
 			$sorting \
 			$pct"
-		qopts="-N pip$pct${sorting}"
+		qopts="-N EMEA${pct}${sorting}"
 		cmd="qsub $qopts $script_cmd"
 		cachecmd full-pipeline-${sorting}-segs-$pct-pct "$cmd" \
 			$data_dependencies \
@@ -189,7 +189,7 @@ script_cmd="$script \
 	$DEV_CORPUS \
 	$TEST_CORPUS \
 	$JOSHUA"
-cmd="qsub -N pipAll $script_cmd"
+cmd="qsub -N EMEAall $script_cmd"
 cachecmd full-pipeline-All-added "$cmd" \
 	$data_dependencies \
 	$script \

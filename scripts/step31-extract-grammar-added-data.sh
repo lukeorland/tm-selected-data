@@ -28,7 +28,7 @@ percent_segs=$5
 
 $joshua/scripts/training/pipeline.pl \
 	--readme "phrase-based, separate glue, twitter tokenizer" \
-	--rundir runs/${sorting}_$percent_segs \
+	--rundir runs/${percent_segs}_${sorting} \
 	--source $source_lang \
 	--target $target_lang \
 	--no-prepare \
@@ -37,11 +37,11 @@ $joshua/scripts/training/pipeline.pl \
 	--corpus data/selection/outdomain_${sorting}_$percent_segs.train \
 	--tune $dev_corpus \
 	--test $test_corpus \
-	--threads 1 \
+	--threads 8 \
 	--joshua-mem 10g \
 	--buildlm-mem 10g \
 	--no-mbr \
-	--optimizer-runs 1 \
+	--optimizer-runs 3 \
 	--hadoop-mem 500m
 	#--corpus EXTRA_TRAINING_CORPUS_1 \
 	#--corpus EXTRA_TRAINING_CORPUS_2 \
