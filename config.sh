@@ -12,8 +12,11 @@
 set -e
 set -o pipefail
 
+# Domain name abbreviated
+dom_abbrv=AUT
+
 # Source and target language file extensions
-source_lang=fr
+source_lang=es
 target_lang=en
 
 # User-modifiable configurations
@@ -22,12 +25,12 @@ PERCENTAGES="5 10 15 20"  # 0 percent gets done implicitly.
 
 # Preprocessed (normalized, tokenized, lowercased, blanks removed) source side
 # of in-domain corpus
-INDOMAIN_CORPUS=$HOME/corpora/ws12-damt-data-pp/EMEA/train.no-doc-boundary.normal.cleaned
+INDOMAIN_CORPUS=$HOME/corpora/taus/txt/Automotive_Manufacturing/train.norm.tok.lc.noblanks
 INDOMAIN_TEXT_SOURCELANG_PROCESSED=$INDOMAIN_CORPUS.$source_lang
 INDOMAIN_TEXT_TARGETLANG_PROCESSED=$INDOMAIN_CORPUS.$target_lang
 
 # Source-side non-in-domain corpus
-OUTDOMAIN_CORPUS=$HOME/corpora/ws12-damt-data-pp/hansard/train.no-doc-boundary.normal.cleaned
+OUTDOMAIN_CORPUS=$HOME/corpora/taus/txt/all/train.norm.tok.lc.noblanks.shuf
 
 # Source-side non-in-domain corpus text used to select parallel training data
 OUTDOMAIN_TEXT_SOURCELANG_PROCESSED=$OUTDOMAIN_CORPUS.$source_lang
@@ -38,5 +41,5 @@ OUTDOMAIN_TEXT_TARGETLANG_PROCESSED=$OUTDOMAIN_CORPUS.$target_lang
 #EXTRA_TRAINING_CORPUS_2=data/blank
 #EXTRA_TRAINING_CORPUS_3=data/blank
 
-DEV_CORPUS=$HOME/corpora/ws12-damt-data-pp/EMEA/dev1.short.no-doc-boundary.normal.unseen
-TEST_CORPUS=$HOME/corpora/ws12-damt-data-pp/EMEA/test1.short.no-doc-boundary.normal.unseen
+DEV_CORPUS=$HOME/corpora/taus/txt/Automotive_Manufacturing/dev.norm.tok.lc.noblanks
+TEST_CORPUS=$HOME/corpora/taus/txt/Automotive_Manufacturing/test.norm.tok.lc.noblanks

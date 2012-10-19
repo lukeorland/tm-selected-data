@@ -8,7 +8,7 @@
 #$ -o log
 #$ -e log
 #$ -S /bin/bash
-#$ -l num_proc=1,h_vmem=20g,mem_free=20g,h_rt=48:00:00
+#$ -l num_proc=1,h_vmem=20g,mem_free=20g,h_rt=168:00:00
 #$ -M lorland1@jhu.edu
 #$ -m eas
 
@@ -40,4 +40,5 @@ $joshua/scripts/training/pipeline.pl \
 	--joshua-mem 4g \
 	--buildlm-mem 4g \
 	--no-mbr \
-	--optimizer-runs 1
+	--optimizer-runs 1 \
+	--hadoop-mem 500m

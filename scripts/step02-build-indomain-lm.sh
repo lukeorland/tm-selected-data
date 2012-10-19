@@ -17,6 +17,7 @@ set -o pipefail
 # Command-line arguments
 srilm_dir=$1
 text=$2
+lm=$3
 
 $srilm_dir/ngram-count \
 	-unk \
@@ -24,5 +25,5 @@ $srilm_dir/ngram-count \
 	-order 5 \
 	-kndiscount \
 	-text $text \
-	-lm data/selection/indomain_source_lm.gz
+	-lm $lm
 

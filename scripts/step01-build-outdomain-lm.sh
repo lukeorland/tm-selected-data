@@ -17,6 +17,8 @@ set -o pipefail
 # Command-line arguments
 srilm_dir=$1
 text=$2
+vocab=$3
+lm=$4
 
 $srilm_dir/ngram-count \
 	-unk \
@@ -24,6 +26,5 @@ $srilm_dir/ngram-count \
 	-order 5 \
 	-kndiscount \
 	-text $text \
-	-vocab data/selection/indomain_sourcelang.vocab \
-	-lm data/selection/outdomain_source_lm.gz
-
+	-vocab $vocab \
+	-lm $lm

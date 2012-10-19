@@ -8,7 +8,7 @@
 #$ -o log
 #$ -e log
 #$ -S /bin/bash
-#$ -l num_proc=1,h_vmem=60g,mem_free=60g,h_rt=48:00:00
+#$ -l num_proc=1,h_vmem=60g,mem_free=60g,h_rt=168:00:00
 #$ -M lorland1@jhu.edu
 #$ -m eas
 
@@ -37,12 +37,14 @@ $joshua/scripts/training/pipeline.pl \
 	--corpus data/selection/outdomain_${sorting}_$percent_segs.train \
 	--tune $dev_corpus \
 	--test $test_corpus \
-	--threads 8 \
-	--joshua-mem 10g \
-	--buildlm-mem 10g \
+	--threads 1 \
+	--joshua-mem 20g \
+	--buildlm-mem 20g \
 	--no-mbr \
 	--optimizer-runs 3 \
-	--hadoop-mem 500m
+	--hadoop-mem 500m \
+  --lm berkeleylm
+	#--threads 8 \
 	#--corpus EXTRA_TRAINING_CORPUS_1 \
 	#--corpus EXTRA_TRAINING_CORPUS_2 \
 	#--corpus EXTRA_TRAINING_CORPUS_3 \
