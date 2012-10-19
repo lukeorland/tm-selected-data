@@ -13,7 +13,7 @@ set -e
 set -o pipefail
 
 # Domain name abbreviated
-dom_abbrv=CmpHBo
+dom_abbrv=CmpSBo
 
 # ${PWD##*/}} expands to the name of this directory.
 corpus_name=${PWD##*/}
