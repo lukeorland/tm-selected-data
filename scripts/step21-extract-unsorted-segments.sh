@@ -28,7 +28,7 @@ set -f
 output_dir=data/selection
 
 # Calculate the number of segments to retain based on the percent requested.
-expression="$(cat data/selection/ppl_diffs_sorted_nodups.txt | wc -l) * $percent_segs / 100"
+expression="$(cat data/selection/ppl_diffs_sum_sorted_nodups.txt | wc -l) * $percent_segs / 100"
 num_segs="$(echo $expression | bc)"
 
 # Turn on globbing.

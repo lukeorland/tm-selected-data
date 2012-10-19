@@ -37,7 +37,7 @@ $joshua/scripts/training/pipeline.pl \
 	--corpus data/selection/outdomain_${sorting}_$percent_segs.train \
 	--tune $dev_corpus \
 	--test $test_corpus \
-	--threads 1 \
+	--threads 8 \
 	--joshua-mem 20g \
 	--buildlm-mem 20g \
 	--no-mbr \

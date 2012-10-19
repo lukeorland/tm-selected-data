@@ -38,6 +38,18 @@ cachecmd extract-indomain-source-vocab "$cmd" \
 	$script \
 	data/selection/indomain_sourcelang.vocab
 
+# Extract the target-side vocabulary from the in-domain corpus
+script=scripts/step00-extract-target-vocab.sh
+script_cmd="$script \
+	$SRILM_DIR \
+	$INDOMAIN_TEXT_TARGETLANG_PROCESSED"
+qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=8g,mem_free=8g,h_rt=24:00:00"
+cmd="qrsh $qopts $script_cmd"
+cachecmd extract-indomain-target-vocab "$cmd" \
+	$INDOMAIN_TEXT_TARGETLANG_PROCESSED \
+	$script \
+	data/selection/indomain_targetlang.vocab
+
 # Build a language model from the subset of non-domain-specific source-side
 # text, with vocabulary restricted by that of the in-domain corpus.
 script=scripts/step01-build-outdomain-lm.sh
@@ -54,6 +66,22 @@ cachecmd build-source-outdomain-lm "$cmd" \
   $script \
 	data/selection/outdomain_source_lm.gz
 
+# Build a language model from the subset of non-domain-specific target-side
+# text, with vocabulary restricted by that of the in-domain corpus.
+script=scripts/step01-build-outdomain-lm.sh
+script_cmd="$script \
+	$SRILM_DIR \
+	$outdomain_target_text_lm_subset \
+	data/selection/indomain_targetlang.vocab \
+	data/selection/outdomain_target_lm.gz"
+qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=8g,mem_free=8g,h_rt=24:00:00"
+cmd="qrsh $qopts $script_cmd"
+cachecmd build-target-outdomain-lm "$cmd" \
+	$outdomain_target_text_lm_subset \
+	data/selection/indomain_targetlang.vocab \
+  $script \
+	data/selection/outdomain_target_lm.gz
+
 # Build a language model from in-domain source-side text.
 script=scripts/step02-build-indomain-lm.sh
 script_cmd="$script \
@@ -66,6 +94,19 @@ cachecmd build-source-indomain-lm "$cmd" \
 	$INDOMAIN_TEXT_SOURCELANG_PROCESSED \
   $script \
 	data/selection/indomain_source_lm.gz
+
+# Build a language model from in-domain target-side text.
+script=scripts/step02-build-indomain-lm.sh
+script_cmd="$script \
+	$SRILM_DIR \
+	$INDOMAIN_TEXT_TARGETLANG_PROCESSED \
+  data/selection/indomain_target_lm.gz"
+qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=8g,mem_free=8g,h_rt=24:00:00"
+cmd="qrsh $qopts $script_cmd"
+cachecmd build-target-indomain-lm "$cmd" \
+	$INDOMAIN_TEXT_TARGETLANG_PROCESSED \
+  $script \
+	data/selection/indomain_target_lm.gz
 
 # Calculate perplexities on source side
 script=scripts/step10-calc-ppls.sh
@@ -86,6 +127,24 @@ cachecmd calculate-source-ppls "$cmd" \
 	data/selection/ppl_source_indomain.txt \
 	data/selection/ppl_source_outdomain.txt
 
+# Calculate perplexities on target side
+script=scripts/step10-calc-ppls.sh
+script_cmd="$script \
+	$SRILM_DIR \
+	$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED \
+	data/selection/outdomain_target_lm.gz \
+	data/selection/indomain_target_lm.gz \
+	data/selection/ppl_target_outdomain.txt \
+	data/selection/ppl_target_indomain.txt"
+qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=2g,mem_free=2g,h_rt=24:00:00"
+cmd="qrsh $qopts $script_cmd"
+cachecmd calculate-target-ppls "$cmd" \
+	data/selection/indomain_target_lm.gz \
+	data/selection/outdomain_target_lm.gz \
+	$script \
+	data/selection/ppl_target_outdomain.txt \
+	data/selection/ppl_target_indomain.txt
+
 # Subtract source perplexities
 script=scripts/step11-subtract-ppls.sh
 script_cmd="$script \
@@ -100,17 +159,32 @@ cachecmd subtract-source-ppls "$cmd" \
 	$script \
 	data/selection/ppl_source_diff.txt
 
-# Paste source and target after the ppl diffs
-script=scripts/step12-paste-source-target.sh
+# Subtract target perplexities
+script=scripts/step11-subtract-ppls.sh
+script_cmd="$script \
+	data/selection/ppl_target_indomain.txt \
+	data/selection/ppl_target_outdomain.txt \
+	data/selection/ppl_target_diff.txt"
+qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=2g,mem_free=2g,h_rt=24:00:00"
+cmd="qrsh $qopts $script_cmd"
+cachecmd subtract-target-ppls "$cmd" \
+	data/selection/ppl_target_indomain.txt \
+	data/selection/ppl_target_outdomain.txt \
+	$script \
+	data/selection/ppl_target_diff.txt
+
+# Sum the two perplexity differences
+script=scripts/step12-sum-diffs.sh
 script_cmd="$script \
   $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
   $OUTDOMAIN_TEXT_TARGETLANG_PROCESSED"
 qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=2g,mem_free=2g,h_rt=24:00:00"
 cmd="qrsh $qopts $script_cmd"
-cachecmd paste-ppl-diffs-source-target "$cmd" \
+cachecmd sum-ppl-diffs "$cmd" \
 	data/selection/ppl_source_diff.txt \
+	data/selection/ppl_target_diff.txt \
 	$script \
-	data/selection/ppl_diffs.txt
+	data/selection/ppl_diffs_sum.txt
 
 # Sort and remove duplicates
 script=scripts/step13-sort-no-dups.sh
@@ -118,9 +192,9 @@ script_cmd="$script"
 qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=2g,mem_free=2g,h_rt=24:00:00"
 cmd="qrsh $qopts $script_cmd"
 cachecmd sort-dedup "$cmd" \
-	data/selection/ppl_diffs.txt \
+	data/selection/ppl_diffs_sum.txt \
 	$script \
-	data/selection/ppl_diffs_sorted_nodups.txt
+	data/selection/ppl_diffs_sum_sorted_nodups.txt
 
 # Extract best subsets of parallel out-of-domain training segments
 for pct in $PERCENTAGES ; do
@@ -132,7 +206,7 @@ for pct in $PERCENTAGES ; do
   qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
 	cmd="qrsh $qopts $script_cmd"
 	cachecmd extract-sorted-segs-$pct-pct "$cmd" \
-	  data/selection/ppl_diffs_sorted_nodups.txt \
+	  data/selection/ppl_diffs_sum_sorted_nodups.txt \
 		$script \
 		data/selection/outdomain_sorted_$pct.train.$source_lang \
 		data/selection/outdomain_sorted_$pct.train.$target_lang
@@ -205,8 +279,7 @@ for sorting in sorted unsorted ; do
 		cachecmd full-pipeline-${sorting}-segs-$pct-pct "$cmd" \
 			$data_dependencies \
 			$script \
-			runs/${pct}_${sorting}/grammar.gz \
-			runs/${pct}_${sorting}/test/final-bleu
+			runs/${sorting}_$pct/grammar.gz \
+			runs/${sorting}_$pct/test/1/final-bleu
 	done
 done
-

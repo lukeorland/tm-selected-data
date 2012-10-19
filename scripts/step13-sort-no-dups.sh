@@ -20,6 +20,7 @@ set -o pipefail
 # Then sort it (largest number is high perplexity against non-in-domain LM and
 # much lower perplexity against in-domain LM).
 # Then delete consecutive duplicates.
-sort -n data/selection/ppl_diffs.txt \
+cat data/selection/ppl_diffs_sum.txt \
+	| sort -n \
 	| uniq \
-	> data/selection/ppl_diffs_sorted_nodups.txt
+	> data/selection/ppl_diffs_sum_sorted_nodups.txt

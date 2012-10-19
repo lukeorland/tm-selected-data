@@ -20,7 +20,8 @@ set -o pipefail
 outdomain_text_sourcelang_processed=$1
 outdomain_text_targetlang_processed=$2
 
-paste data/selection/ppl_source_diff.txt \
+paste data/selection/ppl_source_diff.txt data/selection/ppl_target_diff.txt \
+	| awk -F '\t' '{print $1 + $2}' \
 	| paste - $outdomain_text_sourcelang_processed \
 	| paste - $outdomain_text_targetlang_processed \
-	> data/selection/ppl_diffs.txt
+	> data/selection/ppl_diffs_sum.txt

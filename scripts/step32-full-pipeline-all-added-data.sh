@@ -24,17 +24,16 @@ training_corpus=$1
 dev_corpus=$2
 test_corpus=$3
 joshua=$4
-rundir=$5
 
 $joshua/scripts/training/pipeline.pl \
 	--readme "phrase-based, separate glue, twitter tokenizer" \
-	--rundir  $rundir \
+	--rundir runs/all_added \
 	--source $source_lang \
 	--target $target_lang \
 	--no-prepare \
 	--type phrasal \
 	--aligner giza \
-	--corpus $training_corpus \
+  --corpus $training_corpus \
 	--tune $dev_corpus \
 	--test $test_corpus \
 	--threads 8 \
@@ -42,6 +41,5 @@ $joshua/scripts/training/pipeline.pl \
 	--buildlm-mem 20g \
 	--no-mbr \
 	--optimizer-runs  3 \
-	--lm berkeleylm \
-	--hadoop-mem 4g
+	--hadoop-mem 2g
 
