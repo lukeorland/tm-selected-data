@@ -12,8 +12,7 @@ export PERL5LIB+=:$CACHEPIPE
 . config.sh
 . setup.sh
 
-
-# Extract a translation model using all the out-of-domain training segments.
+# Extract a translation model using all the in-domain training segments.
 # Train, tune, and test it.
 
 data_dependencies=" \
@@ -28,9 +27,11 @@ script_cmd="$script \
 	$OUTDOMAIN_CORPUS \
 	$DEV_CORPUS \
 	$TEST_CORPUS \
-	$JOSHUA"
-cmd="qsub -N ${dom_abbrv}all $script_cmd"
-cachecmd full-pipeline-All-added "$cmd" \
+	$JOSHUA \
+	runs/all_outdom_added"
+cmd="qsub -N ${dom_abbrv}outdom $script_cmd"
+cachecmd full-pipeline-Allindomain-added "$cmd" \
 	$data_dependencies \
 	$script \
-	runs/all_added/grammar.gz
+	runs/all_outdom_added/grammar.gz \
+	runs/all_outdom_added/test/final-bleu
