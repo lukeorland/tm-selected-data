@@ -138,68 +138,51 @@ for pct in $PERCENTAGES ; do
 		data/selection/outdomain_sorted_$pct.train.$target_lang
 done
 
-## Extract unsorted subsets of parallel segments
-#for pct in $PERCENTAGES ; do
-#	script=scripts/step21-extract-unsorted-segments.sh
-#	script_cmd="$script \
-#		$pct \
-#		$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
-#		$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED"
-#  qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
-#	cmd="qrsh $qopts $script_cmd"
-#	cachecmd extract-unsorted-segs-$pct-pct "$cmd" \
-#		$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
-#		$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED \
-#		$script \
-#		data/selection/outdomain_unsorted_$pct.train.$source_lang \
-#		data/selection/outdomain_unsorted_$pct.train.$target_lang
-#done
-
-## Extract a model that has no added text from the out-of-domain corpus.
-## Train, tune, and test it.
-#
-#data_dependencies=" \
-#			`ls $EXTRA_TRAINING_CORPUS_1.$source_lang` \
-#			`ls $EXTRA_TRAINING_CORPUS_1.$target_lang*` \
-#			`ls $EXTRA_TRAINING_CORPUS_2.$source_lang` \
-#			`ls $EXTRA_TRAINING_CORPUS_2.$target_lang*` \
-#			`ls $EXTRA_TRAINING_CORPUS_3.$source_lang` \
-#			`ls $EXTRA_TRAINING_CORPUS_3.$target_lang*` \
-#			`ls $DEV_CORPUS.$source_lang` \
-#			`ls $DEV_CORPUS.$target_lang*` \
-#			`ls $TEST_CORPUS.$source_lang` \
-#			`ls $TEST_CORPUS.$target_lang*` "
-#script=scripts/step30-extract-grammar-no-added-data.sh
-#script_cmd="$script \
-#	$EXTRA_TRAINING_CORPUS_1 \
-#	$EXTRA_TRAINING_CORPUS_2 \
-#	$EXTRA_TRAINING_CORPUS_3 \
-#	$DEV_CORPUS \
-#	$TEST_CORPUS \
-#	$JOSHUA"
-#cmd="qsub -N pip0 $script_cmd"
-#cachecmd full-pipeline-0-added "$cmd" \
-#	$data_dependencies \
-#	$script \
-#	runs/0_added/grammar.gz
-
 # Extract a grammar from selected data; Don't tune it or test it.
-#for sorting in sorted unsorted ; do
-for sorting in sorted ; do
-	for pct in $PERCENTAGES ; do
-		data_dependencies="\
-			`ls data/selection/outdomain_${sorting}_$pct.train.*` "
-		script=scripts/step31-extract-grammar-only.sh
-		script_cmd="$script \
-			$JOSHUA \
-			$sorting \
-			$pct"
-		qopts="-N x${dom_abbrv}${pct}${sorting}"
-		cmd="qsub $qopts $script_cmd"
-		cachecmd extract_grammar_${pct}_${sorting} "$cmd" \
-			$data_dependencies \
-			$script \
-			runs/${pct}_${sorting}/grammar.gz
-	done
+# The finished extraction script kicks off a tune-test script.
+sorting=sorted
+for pct in $PERCENTAGES ; do
+  rundir=runs/${pct}_${sorting}
+  data_dependencies="\
+    `ls data/selection/outdomain_${sorting}_${pct}.train.*` "
+  script=scripts/step31-extract-grammar-only.sh
+  script_cmd="$script \
+    $sorting \
+    $pct"
+  qopts="-N x${dom_abbrv}${pct}${sorting}"
+  cmd="qsub $qopts $script_cmd"
+  cachecmd extract_grammar_${pct}_${sorting} "$cmd" \
+    $data_dependencies \
+    $script \
+    $rundir/grammar.gz \
+    $rundir/test/final-bleu
 done
+
+exit
+
+# Unsorted
+# make sure to run the following command prior:
+# cp -a ../grammar_unsorted/copy_these_rundirs/* runs
+# Tune, test
+sorting=unsorted
+for pct in $PERCENTAGES ; do
+  rundir=runs/${pct}_${sorting}
+  data_dependencies="\
+    `ls $DEV_CORPUS.$source_lang` \
+    `ls $DEV_CORPUS.$target_lang` \
+    `ls $TEST_CORPUS.$source_lang` \
+    `ls $TEST_CORPUS.$target_lang`"
+  script=scripts/step32-tune-test.sh
+  script_cmd="$script \
+    $sorting \
+    $pct"
+  qopts="-N t${dom_abbrv}${pct}${sorting}"
+  cmd="qsub $qopts $script_cmd"
+  cachecmd tune_test_${pct}_${sorting} "$cmd" \
+    $data_dependencies \
+    $rundir/grammar.gz \
+    $script \
+    $rundir/test/final-bleu
+done
+
 

@@ -27,16 +27,18 @@ percent_segs=$4
 rundir=runs/${percent_segs}_${sorting}
 
 $joshua/scripts/training/pipeline.pl \
+  --first-step TEST \
+	--name not_tuned \
+	--optimizer-runs  3 \
 	--rundir $rundir \
 	--source $source_lang \
 	--target $target_lang \
 	--test $test_corpus \
-	--no-filter-tm
+	--no-filter-tm \
 	--grammar $rundir/grammar.gz \
 	--threads 8 \
 	--joshua-mem 20g \
 	--buildlm-mem 20g \
 	--no-mbr \
-  --lmfile $rundir/lm.gz \
-  --first-step TEST
+  --lmfile $rundir/lm.berkeleylm
 
