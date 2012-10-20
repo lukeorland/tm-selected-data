@@ -13,7 +13,7 @@ set -e
 set -o pipefail
 
 # Domain name abbreviated
-dom_abbrv=AUT
+dom_abbrv=Aut
 
 # Source and target language file extensions
 source_lang=es

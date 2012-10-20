@@ -138,22 +138,22 @@ for pct in $PERCENTAGES ; do
 		data/selection/outdomain_sorted_$pct.train.$target_lang
 done
 
-# Extract unsorted subsets of parallel segments
-for pct in $PERCENTAGES ; do
-	script=scripts/step21-extract-unsorted-segments.sh
-	script_cmd="$script \
-		$pct \
-		$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
-		$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED"
-  qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
-	cmd="qrsh $qopts $script_cmd"
-	cachecmd extract-unsorted-segs-$pct-pct "$cmd" \
-		$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
-		$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED \
-		$script \
-		data/selection/outdomain_unsorted_$pct.train.$source_lang \
-		data/selection/outdomain_unsorted_$pct.train.$target_lang
-done
+## Extract unsorted subsets of parallel segments
+#for pct in $PERCENTAGES ; do
+#	script=scripts/step21-extract-unsorted-segments.sh
+#	script_cmd="$script \
+#		$pct \
+#		$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
+#		$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED"
+#  qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
+#	cmd="qrsh $qopts $script_cmd"
+#	cachecmd extract-unsorted-segs-$pct-pct "$cmd" \
+#		$OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
+#		$OUTDOMAIN_TEXT_TARGETLANG_PROCESSED \
+#		$script \
+#		data/selection/outdomain_unsorted_$pct.train.$source_lang \
+#		data/selection/outdomain_unsorted_$pct.train.$target_lang
+#done
 
 ## Extract a model that has no added text from the out-of-domain corpus.
 ## Train, tune, and test it.
@@ -183,30 +183,23 @@ done
 #	$script \
 #	runs/0_added/grammar.gz
 
-# Extract a grammar; train with selected data, tune, and test it.
-# Extract a grammar; train with random data, tune, and test it.
-for sorting in sorted unsorted ; do
+# Extract a grammar from selected data; Don't tune it or test it.
+#for sorting in sorted unsorted ; do
+for sorting in sorted ; do
 	for pct in $PERCENTAGES ; do
 		data_dependencies="\
-			`ls data/selection/outdomain_${sorting}_$pct.train.*` \
-			`ls $DEV_CORPUS.$source_lang` \
-			`ls $DEV_CORPUS.$target_lang*` \
-			`ls $TEST_CORPUS.$source_lang*` \
-			`ls $TEST_CORPUS.$target_lang*` "
-		script=scripts/step31-extract-grammar-added-data.sh
+			`ls data/selection/outdomain_${sorting}_$pct.train.*` "
+		script=scripts/step31-extract-grammar-only.sh
 		script_cmd="$script \
-			$DEV_CORPUS \
-			$TEST_CORPUS \
 			$JOSHUA \
 			$sorting \
 			$pct"
-		qopts="-N ${dom_abbrv}${pct}${sorting}"
+		qopts="-N x${dom_abbrv}${pct}${sorting}"
 		cmd="qsub $qopts $script_cmd"
-		cachecmd full-pipeline-${sorting}-segs-$pct-pct "$cmd" \
+		cachecmd extract_grammar_${pct}_${sorting} "$cmd" \
 			$data_dependencies \
 			$script \
-			runs/${pct}_${sorting}/grammar.gz \
-			runs/${pct}_${sorting}/test/final-bleu
+			runs/${pct}_${sorting}/grammar.gz
 	done
 done
 
