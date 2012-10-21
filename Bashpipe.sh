@@ -138,6 +138,23 @@ for pct in $PERCENTAGES ; do
 		data/selection/outdomain_sorted_$pct.train.$target_lang
 done
 
+# Extract the same size of subsets of parallel out-of-domain training segments,
+# selected randomly.
+for pct in $PERCENTAGES ; do
+	script=scripts/step21-extract-unsorted-segments.sh
+	script_cmd="$script \
+		$pct \
+		data/selection/outdomain_unsorted_$pct.train.$source_lang \
+		data/selection/outdomain_unsorted_$pct.train.$target_lang"
+  qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
+	cmd="qrsh $qopts $script_cmd"
+	cachecmd extract-unsorted-segs-$pct-pct "$cmd" \
+	  data/selection/ppl_diffs_sorted_nodups.txt \
+		$script \
+		data/selection/outdomain_unsorted_$pct.train.$source_lang \
+		data/selection/outdomain_unsorted_$pct.train.$target_lang
+done
+
 # Extract a grammar from selected data; Don't tune it or test it.
 # The finished extraction script kicks off a tune-test script.
 sorting=sorted
