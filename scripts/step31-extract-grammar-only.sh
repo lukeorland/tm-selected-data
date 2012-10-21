@@ -14,10 +14,10 @@
 
 . config.sh
 
-#set -u
+set -u
 set -x
-#set -e
-#set -o pipefail
+set -e
+set -o pipefail
 
 # Command-line arguments
 sorting=$1
@@ -46,23 +46,20 @@ export PERL5LIB+=:$CACHEPIPE
 . $CACHEPIPE/bashrc
 
 # Kick off tune-test script
-for pct in $PERCENTAGES ; do
-  data_dependencies="\
-    `ls $DEV_CORPUS.$source_lang` \
-    `ls $DEV_CORPUS.$target_lang` \
-    `ls $TEST_CORPUS.$source_lang` \
-    `ls $TEST_CORPUS.$target_lang` "
-  script=scripts/step32-tune-test.sh
-  script_cmd="$script \
-    $sorting \
-    $pct"
-  qopts="-N t${dom_abbrv}${pct}${sorting}"
-  cmd="qsub $qopts $script_cmd"
-  cachecmd tune_test_${pct}_${sorting} "$cmd" \
-    $data_dependencies \
-    $rundir/grammar.gz \
-    $script \
-    $rundir/test/final-bleu
-done
-
+data_dependencies="\
+  `ls $DEV_CORPUS.$source_lang` \
+  `ls $DEV_CORPUS.$target_lang` \
+  `ls $TEST_CORPUS.$source_lang` \
+  `ls $TEST_CORPUS.$target_lang` "
+script=scripts/step32-tune-test.sh
+script_cmd="$script \
+  $sorting \
+  $pct"
+qopts="-N t${dom_abbrv}${pct}${sorting}"
+cmd="qsub $qopts $script_cmd"
+cachecmd tune_test_${pct}_${sorting} "$cmd" \
+  $data_dependencies \
+  $rundir/grammar.gz \
+  $script \
+  $rundir/test/final-bleu
 

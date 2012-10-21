@@ -158,8 +158,6 @@ for pct in $PERCENTAGES ; do
     $rundir/test/final-bleu
 done
 
-exit
-
 # Unsorted
 # make sure to run the following command prior:
 # cp -a ../grammar_unsorted/copy_these_rundirs/* runs
