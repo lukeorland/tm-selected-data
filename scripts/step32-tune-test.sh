@@ -40,5 +40,5 @@ $JOSHUA/scripts/training/pipeline.pl \
 	--joshua-mem 15g \
 	--buildlm-mem 15g \
 	--no-mbr \
-	--optimizer-runs  3 \
+	--optimizer-runs  1 \
 
