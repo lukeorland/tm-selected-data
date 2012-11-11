@@ -19,8 +19,6 @@ set -o pipefail
 
 # Command-line arguments
 percent_segs=$1
-outdomain_text_sourcelang_processed=$2
-outdomain_text_targetlang_processed=$3
 
 # Turn off globbing.
 set -f
@@ -35,9 +33,10 @@ num_segs="$(echo $expression | bc)"
 set +f
 
 # SOURCE
-head -n $num_segs $outdomain_text_sourcelang_processed \
+head -n $num_segs $OUTDOMAIN_TEXT_SOURCELANG_PROCESSED \
 	> $output_dir/outdomain_unsorted_$percent_segs.train.$source_lang
 
 # TARGET
-head -n $num_segs $outdomain_text_targetlang_processed \
+head -n $num_segs $OUTDOMAIN_TEXT_TARGETLANG_PROCESSED \
 	> $output_dir/outdomain_unsorted_$percent_segs.train.$target_lang
+

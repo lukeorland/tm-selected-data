@@ -143,9 +143,7 @@ done
 for pct in $PERCENTAGES ; do
 	script=scripts/step21-extract-unsorted-segments.sh
 	script_cmd="$script \
-		$pct \
-		data/selection/outdomain_unsorted_$pct.train.$source_lang \
-		data/selection/outdomain_unsorted_$pct.train.$target_lang"
+		$pct"
   qopts="-cwd -V -e log -o log -l num_proc=1,h_vmem=1g,mem_free=1g,h_rt=24:00:00"
 	cmd="qrsh $qopts $script_cmd"
 	cachecmd extract-unsorted-segs-$pct-pct "$cmd" \

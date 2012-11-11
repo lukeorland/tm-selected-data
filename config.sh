@@ -24,7 +24,7 @@ target_lang=en
 
 # User-modifiable configurations
 SRILM_DIR=$HOME/.local/bin
-PERCENTAGES="5 10 15 20"  # 0 percent gets done implicitly.
+PERCENTAGES="30 40 60 80"
 
 # Preprocessed (normalized, tokenized, lowercased, blanks removed) source side
 # of in-domain corpus
