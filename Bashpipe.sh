@@ -259,7 +259,7 @@ done
 
 # Extract a grammar; train with selected data, tune, and test it.
 # Extract a grammar; train with random data, tune, and test it.
-for sorting in sorted unsorted ; do
+for sorting in sorted ; do
 	for pct in $PERCENTAGES ; do
 		data_dependencies="\
 			`ls data/selection/outdomain_${sorting}_$pct.train.*` \
@@ -280,6 +280,6 @@ for sorting in sorted unsorted ; do
 			$data_dependencies \
 			$script \
 			runs/${sorting}_$pct/grammar.gz \
-			runs/${sorting}_$pct/test/1/final-bleu
+			runs/${sorting}_$pct/test/final-bleu
 	done
 done

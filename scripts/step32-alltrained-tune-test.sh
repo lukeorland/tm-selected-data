@@ -27,13 +27,11 @@ joshua=$4
 rundir=$5
 
 $joshua/scripts/training/pipeline.pl \
-	--readme "phrase-based, separate glue, twitter tokenizer" \
 	--rundir  $rundir \
 	--source $source_lang \
 	--target $target_lang \
-	--no-prepare \
-	--type phrasal \
-	--aligner giza \
+	--first-step TUNE \
+	--grammar $rundir/grammar.gz \
 	--corpus $training_corpus \
 	--tune $dev_corpus \
 	--test $test_corpus \

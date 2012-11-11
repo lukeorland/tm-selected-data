@@ -13,7 +13,7 @@ set -e
 set -o pipefail
 
 # Domain name abbreviated
-dom_abbrv=CmpHBo
+dom_abbrv=AutBo
 
 # ${PWD##*/}} expands to the name of this directory.
 corpus_name=${PWD##*/}
@@ -24,7 +24,8 @@ target_lang=en
 
 # User-modifiable configurations
 SRILM_DIR=$HOME/.local/bin
-PERCENTAGES="5 20"  # 0 percent gets done implicitly.
+#PERCENTAGES="5 10 15 20"  # 0 percent gets done implicitly.
+PERCENTAGES="40 60 80"  # 0 percent gets done implicitly.
 
 # Preprocessed (normalized, tokenized, lowercased, blanks removed) source side
 # of in-domain corpus
